@@ -85,6 +85,11 @@ export class CommandHandler {
       const userRole = user.role || 'GUEST';
       const minRole = command.minRole || 'GUEST';
 
+      if (bot.maintenanceMode && userRole !== 'OWNER') {
+          await bot.sendMessage(msg.key.remoteJid!, { text: `🛠️ Bot is currently in maintenance mode. Please try again later.` });
+          return;
+      }
+
       if (ROLE_PRIORITY[userRole] < ROLE_PRIORITY[minRole]) {
           await bot.sendMessage(msg.key.remoteJid!, { text: `⚠️ You do not have permission to use this command. Required role: ${minRole}` });
           return;

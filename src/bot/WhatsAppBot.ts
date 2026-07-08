@@ -16,6 +16,7 @@ import fs from 'fs';
 
 export class WhatsAppBot extends EventEmitter {
   private socket: any;
+  public maintenanceMode: boolean = false;
 
   constructor() {
     super();
@@ -61,6 +62,9 @@ export class WhatsAppBot extends EventEmitter {
     });
 
     this.socket.ev.on('messages.upsert', async (m: any) => {
+      if (this.maintenanceMode) {
+          // Could notify user or just ignore
+      }
       this.emit('messages.upsert', m);
     });
   }

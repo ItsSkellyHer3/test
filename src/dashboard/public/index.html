@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSINT Bot Dashboard</title>
+    <title>OSINT Bot Control Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/beercss@3.5.1/dist/cdn/beer.min.css" rel="stylesheet">
     <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.5.1/dist/cdn/beer.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        #login-page {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        #main-content {
-            display: none;
-        }
+        :root { --primary: #006a6a; }
+        #login-page { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--surface-container-low); }
+        #main-content { display: none; }
+        .chat-bubble { max-width: 80%; padding: 12px; border-radius: 16px; margin-bottom: 8px; position: relative; }
+        .chat-bubble.sent { align-self: flex-end; background-color: var(--primary-container); color: var(--on-primary-container); border-bottom-right-radius: 4px; }
+        .chat-bubble.received { align-self: flex-start; background-color: var(--secondary-container); color: var(--on-secondary-container); border-bottom-left-radius: 4px; }
+        .terminal { background: #1e1e1e; color: #00ff00; font-family: 'Courier New', Courier, monospace; padding: 10px; border-radius: 8px; height: 200px; overflow-y: auto; font-size: 12px; }
     </style>
 </head>
 <body class="dark">
     <div id="login-page">
-        <article class="no-padding">
-            <div class="padding">
-                <h5>Login</h5>
+        <article class="no-padding medium-width elevate">
+            <div class="padding center-align">
+                <i class="extra">security</i>
+                <h5>OSINT Bot Login</h5>
+                <div class="space"></div>
                 <div class="field label border">
                     <input type="text" id="username">
                     <label>Username</label>
@@ -32,9 +32,8 @@
                     <input type="password" id="password">
                     <label>Password</label>
                 </div>
-                <nav class="right-align">
-                    <button id="login-btn">Login</button>
-                </nav>
+                <div class="space"></div>
+                <button class="extend" id="login-btn" type="submit">Login to Dashboard</button>
             </div>
         </article>
     </div>
@@ -43,187 +42,155 @@
         <nav class="left drawer">
             <header>
                 <i class="extra">android</i>
-                <h5>OSINT Bot</h5>
+                <h5>Control Panel</h5>
             </header>
-        <a onclick="showView('dashboard', this)">
-                <i>dashboard</i>
-                <span>Dashboard</span>
-            </a>
-        <a onclick="showView('chat', this)">
-                <i>chat</i>
-                <span>Chat Monitor</span>
-            </a>
-        <a onclick="showView('groups', this)">
-                <i>group</i>
-                <span>Groups</span>
-            </a>
-        <a onclick="showView('analytics', this)">
-                <i>analytics</i>
-                <span>Analytics</span>
-            </a>
-        <a onclick="showView('settings', this)">
-                <i>settings</i>
-                <span>Settings</span>
-            </a>
+            <a onclick="showView('dashboard', this)"><i>dashboard</i><span>Dashboard</span></a>
+            <a onclick="showView('chat', this)"><i>forum</i><span>Messages</span></a>
+            <a onclick="showView('groups', this)"><i>group</i><span>Groups</span></a>
+            <a onclick="showView('osint', this)"><i>search</i><span>OSINT Tools</span></a>
+            <a onclick="showView('owner', this)"><i>admin_panel_settings</i><span>Owner Panel</span></a>
+            <a onclick="showView('settings', this)"><i>settings</i><span>Settings</span></a>
             <div class="max"></div>
-            <a id="logout-btn">
-                <i>logout</i>
-                <span>Logout</span>
-            </a>
+            <a id="logout-btn"><i>logout</i><span>Logout</span></a>
         </nav>
 
         <main class="responsive">
-            <header class="primary">
+            <header class="fixed primary">
                 <nav>
-                    <button class="circle transparent" data-ui="#nav">
-                        <i>menu</i>
-                    </button>
+                    <button class="circle transparent" data-ui="#nav"><i>menu</i></button>
                     <h5 class="max" id="view-title">Dashboard</h5>
-                    <button class="circle transparent" onclick="ui('mode', ui('mode') == 'dark' ? 'light' : 'dark')">
-                        <i>brightness_medium</i>
-                    </button>
+                    <button class="circle transparent" onclick="ui('mode', ui('mode') == 'dark' ? 'light' : 'dark')"><i>brightness_medium</i></button>
                 </nav>
             </header>
 
+            <!-- Dashboard View -->
             <div id="dashboard-view" class="view">
                 <div class="grid">
-                <div class="s12 m6 l3">
-                    <article class="primary-container">
-                        <div class="row">
-                            <i class="extra">link</i>
-                            <div class="max">
-                                <h5>Status</h5>
-                                <p id="bot-status">Connecting...</p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="s12 m6 l3">
-                    <article class="secondary-container">
-                        <div class="row">
-                            <i class="extra">schedule</i>
-                            <div class="max">
-                                <h5>Uptime</h5>
-                                <p id="bot-uptime">0s</p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="s12 m6 l3">
-                    <article class="tertiary-container">
-                        <div class="row">
-                            <i class="extra">memory</i>
-                            <div class="max">
-                                <h5>Memory</h5>
-                                <p id="bot-memory">0 MB</p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="s12 m6 l3">
-                    <article class="surface-container-highest">
-                        <div class="row">
-                            <i class="extra">analytics</i>
-                            <div class="max">
-                                <h5>Active Users (24h)</h5>
-                                <p id="active-users">0</p>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            </div> <!-- End Dashboard View -->
-
-            <div id="groups-view" class="view" style="display: none;">
-                <div class="grid" id="groups-list">
-                    <!-- Groups cards -->
-                </div>
-                <article id="group-detail-view" style="display: none;">
-                    <div class="row">
-                        <button class="circle transparent" onclick="document.getElementById('group-detail-view').style.display='none'; document.getElementById('groups-list').style.display='grid';">
-                            <i>arrow_back</i>
-                        </button>
-                        <h5 id="detail-group-name" class="max">Group Name</h5>
+                    <div class="s12 m6 l3">
+                        <article class="primary-container elevate">
+                            <div class="row"><i class="extra">link</i><div class="max"><h5>Status</h5><p id="bot-status">...</p></div></div>
+                        </article>
                     </div>
-                    <div class="space"></div>
-                    <div id="member-list" class="scroll" style="max-height: 400px; overflow-y: auto;">
-                        <!-- Member list -->
+                    <div class="s12 m6 l3">
+                        <article class="secondary-container elevate">
+                            <div class="row"><i class="extra">schedule</i><div class="max"><h5>Uptime</h5><p id="bot-uptime">...</p></div></div>
+                        </article>
                     </div>
+                    <div class="s12 m6 l3">
+                        <article class="tertiary-container elevate">
+                            <div class="row"><i class="extra">memory</i><div class="max"><h5>Memory</h5><p id="bot-memory">...</p></div></div>
+                        </article>
+                    </div>
+                    <div class="s12 m6 l3">
+                        <article class="surface-container-highest elevate">
+                            <div class="row"><i class="extra">analytics</i><div class="max"><h5>Active Users</h5><p id="active-users">0</p></div></div>
+                        </article>
+                    </div>
+                </div>
+                <article class="elevate">
+                    <h5>Recent Command Activity</h5>
+                    <div id="top-commands"></div>
                 </article>
             </div>
 
-            <div id="analytics-view" class="view" style="display: none;">
-                <article>
-                    <h5>Command Usage</h5>
-                    <div id="analytics-commands"></div>
-                </article>
-            </div>
-
-            <div id="settings-view" class="view" style="display: none;">
-                <article>
-                    <h5>Bot Settings</h5>
-                    <div class="field label border">
-                        <input type="text" id="bot-display-name">
-                        <label>Display Name</label>
-                    </div>
-                    <div class="field label border">
-                        <input type="text" id="bot-bio">
-                        <label>Bio/About</label>
-                    </div>
-                    <div class="field label border">
-                        <select id="bot-presence">
-                            <option value="available">Online</option>
-                            <option value="unavailable">Offline</option>
-                            <option value="composing">Typing</option>
-                            <option value="recording">Recording</option>
-                        </select>
-                        <label>Presence</label>
-                    </div>
-                    <nav class="right-align">
-                        <button onclick="saveBotSettings()">Save Settings</button>
-                    </nav>
-                </article>
-            </div>
-
+            <!-- Chat View -->
             <div id="chat-view" class="view" style="display: none;">
-                <div class="grid">
-                    <div class="s12 m4">
-                        <article class="no-padding">
-                            <div class="padding"><h5>Chats</h5></div>
-                            <div id="chat-list" class="scroll" style="max-height: 70vh; overflow-y: auto;">
-                                <!-- Chat list items -->
+                <div class="grid no-space" style="height: calc(100vh - 100px);">
+                    <div class="s12 m4 border-right scroll" id="chat-list" style="height: 100%;">
+                        <!-- Chats populate here -->
+                    </div>
+                    <div class="s12 m8 column" style="height: 100%;">
+                        <div class="padding border-bottom row">
+                            <h6 class="max" id="current-chat-name">Select a conversation</h6>
+                        </div>
+                        <div id="chat-messages" class="max scroll padding column" style="overflow-y: auto;">
+                            <!-- Messages populate here -->
+                        </div>
+                        <div class="padding border-top row">
+                            <div class="field label border max">
+                                <input type="text" id="chat-input" placeholder="Type a message...">
                             </div>
+                            <button class="circle" id="send-btn"><i>send</i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Groups View -->
+            <div id="groups-view" class="view" style="display: none;">
+                <div class="grid" id="groups-list"></div>
+                <article id="group-detail-view" style="display: none;" class="elevate">
+                    <div class="row">
+                        <button class="circle transparent" onclick="document.getElementById('group-detail-view').style.display='none'; document.getElementById('groups-list').style.display='grid';"><i>arrow_back</i></button>
+                        <h5 id="detail-group-name" class="max">Group</h5>
+                    </div>
+                    <div class="tabs">
+                        <a class="active" data-ui="#members-tab">Members</a>
+                        <a data-ui="#settings-tab">Settings</a>
+                    </div>
+                    <div id="members-tab" class="page active scroll" style="max-height: 400px;">
+                        <div id="member-list"></div>
+                    </div>
+                    <div id="settings-tab" class="page padding">
+                        <div class="field label border"><input type="text" id="group-name-input"><label>Group Name</label></div>
+                        <button onclick="updateGroupName()">Update Name</button>
+                    </div>
+                </article>
+            </div>
+
+            <!-- OSINT View -->
+            <div id="osint-view" class="view" style="display: none;">
+                <article class="elevate">
+                    <h5>Intelligence Tools</h5>
+                    <div class="grid">
+                        <div class="s12 m6">
+                            <div class="field label border"><input type="text" id="osint-query"><label>Target (Domain/IP/Text)</label></div>
+                            <nav>
+                                <button onclick="runWebCommand('whois')">Whois</button>
+                                <button onclick="runWebCommand('dns')">DNS</button>
+                                <button onclick="runWebCommand('ip')">IP Info</button>
+                                <button onclick="runWebCommand('tech')">Tech Stack</button>
+                            </nav>
+                        </div>
+                        <div class="s12 m6">
+                            <div id="osint-result" class="padding border scroll surface-container-low" style="height: 200px;">Results will appear here...</div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Owner Panel -->
+            <div id="owner-view" class="view" style="display: none;">
+                <div class="grid">
+                    <div class="s12 m6">
+                        <article class="elevate">
+                            <h5>Bot Control</h5>
+                            <nav class="vertical">
+                                <button class="border" onclick="botAction('restart')">Restart Bot</button>
+                                <button class="border" onclick="botAction('reload')">Reload Plugins</button>
+                                <button class="border" onclick="botAction('maintenance')">Toggle Maintenance</button>
+                            </nav>
                         </article>
                     </div>
-                    <div class="s12 m8">
-                        <article class="no-padding">
-                            <div class="padding"><h5 id="current-chat-name">Select a chat</h5></div>
-                            <div id="chat-messages" class="scroll padding" style="height: 60vh; overflow-y: auto; display: flex; flex-direction: column-reverse;">
-                                <!-- Messages -->
-                            </div>
+                    <div class="s12 m6">
+                        <article class="elevate">
+                            <h5>Live Console</h5>
+                            <div id="owner-console" class="terminal"></div>
                         </article>
                     </div>
                 </div>
             </div>
 
-            <div class="grid">
-                <div class="s12 m6">
-                    <article>
-                        <h5>Top Commands</h5>
-                        <div id="top-commands"></div>
-                    </article>
-                </div>
-                <div class="s12 m6">
-                    <article>
-                        <h5>Quick Actions</h5>
-                        <nav>
-                            <button class="border">Restart Bot</button>
-                            <button class="border">Clear Logs</button>
-                        </nav>
-                    </article>
-                </div>
+            <!-- Settings View -->
+            <div id="settings-view" class="view" style="display: none;">
+                <article class="elevate">
+                    <h5>Profile Management</h5>
+                    <div class="field label border"><input type="text" id="bot-display-name"><label>Display Name</label></div>
+                    <div class="field label border"><input type="text" id="bot-bio"><label>Bio/About</label></div>
+                    <button onclick="saveBotSettings()">Save Profile</button>
+                </article>
             </div>
+
         </main>
     </div>
 

@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-07-08
+
+### Revamped
+- **UI/UX Overhaul**
+    - Complete redesign using Material Design 3 (Beer CSS).
+    - Stable sidebar and top bar navigation.
+    - Responsive multi-pane chat interface for web-based messaging.
+    - Tabbed Group Management system.
+- **Web-Based Bot Control**
+    - Full messaging support from the dashboard (Send/Reply).
+    - Group administrative actions (Kick, Promote, Rename, Ephemeral).
+    - Bot profile management (Name, Bio, PFP updates).
+    - Real-time "Owner Console" for monitoring system logs.
+- **Security & Stability**
+    - Updated owner registration to `96190322475148@lid`.
+    - Improved connection recovery logic.
+    - Local network IP auto-detection for easy dashboard access.
+
 ## [1.0.0] - 2026-07-08
 
 ### Added
