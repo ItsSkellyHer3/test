@@ -4,16 +4,18 @@ import makeWASocket, {
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   WAMessageKey,
-  WAMessageContent,
+  AnyMessageContent,
+  MiscMessageGenerationOptions,
+  delay,
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import logger from '../utils/logger';
 import EventEmitter from 'events';
+import qrcode from 'qrcode-terminal';
+import fs from 'fs';
 
 export class WhatsAppBot extends EventEmitter {
   private socket: any;
-  private state: any;
-  private saveCreds: any;
 
   constructor() {
     super();
@@ -30,21 +32,26 @@ export class WhatsAppBot extends EventEmitter {
         creds: state.creds,
         keys: makeCacheableSignalKeyStore(state.keys, logger as any),
       },
-      printQRInTerminal: true,
+      printQRInTerminal: false,
       logger: logger as any,
     });
 
     this.socket.ev.on('creds.update', saveCreds);
 
-    this.socket.ev.on('connection.update', (update: any) => {
+    this.socket.ev.on('connection.update', async (update: any) => {
       const { connection, lastDisconnect, qr } = update;
+
       if (qr) {
+        qrcode.generate(qr, { small: true });
+        logger.info('Scan the QR code above or use pairing code logic if enabled.');
         this.emit('qr', qr);
       }
+
       if (connection === 'close') {
         const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
         logger.info('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
         if (shouldReconnect) {
+          await delay(5000);
           this.start();
         }
       } else if (connection === 'open') {
@@ -56,11 +63,17 @@ export class WhatsAppBot extends EventEmitter {
     this.socket.ev.on('messages.upsert', async (m: any) => {
       this.emit('messages.upsert', m);
     });
-
-    // Add more event listeners as needed
   }
 
-  public async sendMessage(jid: string, content: WAMessageContent, options: any = {}) {
+  public async requestPairingCode(phoneNumber: string) {
+      if (this.socket) {
+          const code = await this.socket.requestPairingCode(phoneNumber);
+          return code;
+      }
+      return null;
+  }
+
+  public async sendMessage(jid: string, content: AnyMessageContent, options: MiscMessageGenerationOptions = {}) {
     return await this.socket.sendMessage(jid, content, options);
   }
 

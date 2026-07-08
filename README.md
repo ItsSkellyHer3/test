@@ -4,44 +4,35 @@ A professional WhatsApp bot built with Node.js and WhiskeySockets Baileys, featu
 
 ## Features
 - **Modular Command System:** Easily add new commands.
-- **OSINT Tools:** WHOIS, IP lookup, Hashing, and more.
+- **OSINT Tools:** WHOIS, DNS, IP, SSL, Exif, Tech detection, ASN, and more.
 - **Web Dashboard:** Real-time monitoring, status updates, and analytics.
-- **Security:** JWT authentication, rate limiting, and helmet.
+- **Security:** JWT authentication, bcrypt hashing, rate limiting, and helmet.
 - **Persistence:** SQLite database with Sequelize ORM.
+- **Responsive UI:** Modern Material Design 3 UI, mobile-friendly.
 
 ## Setup Instructions
 
-### Prerequisites
-- Node.js (v16+)
-- npm
-
-### Installation
+### Installation (Linux/Debian/Mint)
 1. Clone the repository.
-2. Install dependencies:
+2. Run the setup script:
    ```bash
-   npm install
+   chmod +x run.sh
+   ./run.sh
    ```
-3. Create a `.env` file from the provided template.
-4. Build the project:
-   ```bash
-   npm run build
-   ```
-
-### Running
-- Development mode:
-  ```bash
-   npm run dev
-   ```
-- Production mode:
-  ```bash
-   npm start
-   ```
-
-## Dashboard
-Access the dashboard at `http://localhost:3000`. Default credentials: `admin` / `admin`.
 
 ## OSINT Commands
 - `.whois <domain>`
+- `.dns <domain>`
 - `.ip <address>`
+- `.ssl <domain>`
+- `.tech <url>`
+- `.asn <ip>`
+- `.exif` (reply to image)
 - `.hash <text>`
-- `.anon <name> | <message>`
+- `.qrencode <text>`
+- `.ping`
+- `.help`
+
+## Configuration
+Update the `.env` file with your details.
+Format for `OWNER_NUMBER`: `[countrycode][number]@s.whatsapp.net` (e.g., `1234567890@s.whatsapp.net`).

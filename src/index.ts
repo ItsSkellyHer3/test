@@ -1,11 +1,14 @@
 import { bot } from './bot/WhatsAppBot';
+import { printBanner } from './bot/banner';
 import sequelize from './database';
 import logger from './utils/logger';
 import { commandHandler } from './utils/commandHandler';
 import { startServer } from './server';
+import MessageModel from './models/Message';
 
 async function main() {
   try {
+    printBanner();
     await sequelize.authenticate();
     await sequelize.sync();
     logger.info('Database connected.');
@@ -32,7 +35,7 @@ async function main() {
 
         // Save message to DB
         try {
-            await Message.upsert({
+            await MessageModel.upsert({
                 id: msg.key.id!,
                 chatJid: jid,
                 senderJid: sender,
