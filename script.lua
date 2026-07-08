@@ -1,4 +1,4 @@
-if _G.OmniBubbleGui then 
+if _G.OmniBubbleGui then
     pcall(function() _G.OmniBubbleGui:Destroy() end)
 end
 local Lighting = game:GetService("Lighting")
@@ -70,8 +70,8 @@ local function downloadAsset(name, url)
     end
 end
 
-for name, url in pairs(imageLinks) do 
-    task.spawn(downloadAsset, name, url) 
+for name, url in pairs(imageLinks) do
+    task.spawn(downloadAsset, name, url)
 end
 
 -- 2. UI INITIALIZATION
@@ -219,9 +219,9 @@ local function applyEnvironmentTrick(mode, assetId)
 end
 
 local function textureSpecificBodyParts(partCategory, assetId)
-    if assetId == "" or not LocalPlayer.Character then return end    
+    if assetId == "" or not LocalPlayer.Character then return end
     local targets = rigPartMapping[partCategory]
-    if not targets then return end    
+    if not targets then return end
     for _, partName in ipairs(targets) do
         local p = LocalPlayer.Character:FindFirstChild(partName)
         if p and p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
@@ -257,13 +257,13 @@ local function updateShiftLockState()
     local char = LocalPlayer.Character
     local hum = char and char:FindFirstChildOfClass("Humanoid")
     local camera = workspace.CurrentCamera
-    
+
     if isShiftLockEnabled and hum and char:FindFirstChild("HumanoidRootPart") then
         ShiftLockCursor.Image = currentShiftLockAsset
         ShiftLockCursor.Visible = true
         hum.CameraOffset = Vector3.new(1.7, 0.5, 0)
         hum.AutoRotate = false
-        
+
         if not shiftLockConn then
             shiftLockConn = RunService:BindToRenderStep("OmniShiftLockOverride", Enum.RenderPriority.Camera.Value + 1, function()
                 UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
@@ -297,19 +297,19 @@ local function addTextureToolToInventory(name, assetId)
     local tool = Instance.new("Tool")
     tool.Name = name .. " Painter"
     tool.RequiresHandle = true
-    
+
     local handle = Instance.new("Part")
     handle.Name = "Handle"
     handle.Size = Vector3.new(1.2, 1.2, 1.2)
     handle.Material = Enum.Material.Neon
     handle.Parent = tool
-    
+
     for _, face in ipairs(Enum.NormalId:GetEnumItems()) do
         local d = Instance.new("Decal", handle)
         d.Face = face
         d.Texture = assetId
     end
-    
+
     tool.Activated:Connect(function()
         local mouse = LocalPlayer:GetMouse()
         if mouse and mouse.Target and mouse.Target:IsA("BasePart") then
@@ -327,7 +327,7 @@ local function addTextureToolToInventory(name, assetId)
             end
         end
     end)
-    
+
     local backpack = LocalPlayer:FindFirstChildOfClass("Backpack")
     if backpack then tool.Parent = backpack end
 end
@@ -356,7 +356,7 @@ local function createDropdown(title, order)
     dropdownFrame.BackgroundTransparency = 1
     dropdownFrame.ClipsDescendants = true
     dropdownFrame.LayoutOrder = order
-    
+
     local headerButton = Instance.new("TextButton", dropdownFrame)
     headerButton.Size = UDim2.new(1, 0, 0, 30)
     headerButton.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
@@ -365,27 +365,27 @@ local function createDropdown(title, order)
     headerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     headerButton.TextSize = 14
     Instance.new("UICorner", headerButton).CornerRadius = UDim.new(0, 5)
-    
+
     local itemContainer = Instance.new("Frame", dropdownFrame)
     itemContainer.Position = UDim2.new(0, 0, 0, 35)
     itemContainer.Size = UDim2.new(1, 0, 0, 0)
     itemContainer.BackgroundTransparency = 1
-    
+
     local containerLayout = Instance.new("UIListLayout", itemContainer)
     containerLayout.Padding = UDim.new(0, 4)
-    
+
     if dropdownStates[title] then
         task.defer(function()
             dropdownFrame.Size = UDim2.new(1, -6, 0, containerLayout.AbsoluteContentSize.Y + 40)
         end)
     end
-    
+
     containerLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         if dropdownStates[title] then
             dropdownFrame.Size = UDim2.new(1, -6, 0, containerLayout.AbsoluteContentSize.Y + 40)
         end
     end)
-    
+
     headerButton.MouseButton1Click:Connect(function()
         dropdownStates[title] = not dropdownStates[title]
         headerButton.Text = (dropdownStates[title] and "➖ " or "➕ ") .. title
@@ -394,7 +394,7 @@ local function createDropdown(title, order)
             Size = UDim2.new(1, -6, 0, targetHeight)
         }):Play()
     end)
-    
+
     return itemContainer
 end
 
@@ -415,7 +415,7 @@ buildActionList = function()
     for _, item in ipairs(ActionListFrame:GetChildren()) do
         if not item:IsA("UIListLayout") then item:Destroy() end
     end
-    
+
     local selectImgCategory = createDropdown("1. Select Inventory Image", 1)
     local bodyPartsCategory = createDropdown("2. Wrap Selected Body Part", 2)
     local giveItemCategory = createDropdown("3. Give Asset Tool", 3)
@@ -424,50 +424,50 @@ buildActionList = function()
     local worldFxCategory = createDropdown("World FX & Tricks Panel", 6)
     local shiftlockCategory = createDropdown("Custom Shiftlock", 7)
     local utilsCategory = createDropdown("Utilities & Configs", 8)
-    
+
     local sortedKeys = {}
     for name in pairs(imageLinks) do table.insert(sortedKeys, name) end
     table.sort(sortedKeys)
-    
+
     for _, name in ipairs(sortedKeys) do
         local asset = assets[name] or imageLinks[name]
         local displayColor = (selectedAssetForWrapping == asset) and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(114, 9, 183)
         createButton(selectImgCategory, name .. ((selectedAssetForWrapping == asset) and " [SELECTED]" or ""), displayColor, function()
             selectedAssetForWrapping = asset
-            buildActionList() 
+            buildActionList()
          end)
     end
-    
+
     for partName, _ in pairs(rigPartMapping) do
         createButton(bodyPartsCategory, "Wrap: " .. partName, Color3.fromRGB(94, 60, 230), function()
             if selectedAssetForWrapping ~= "" then textureSpecificBodyParts(partName, selectedAssetForWrapping) end
         end)
     end
-    
+
     for _, name in ipairs(sortedKeys) do
         local asset = assets[name] or imageLinks[name]
         createButton(giveItemCategory, "Give: " .. name .. " Painter Tool", Color3.fromRGB(244, 162, 97), function()
             addTextureToolToInventory(name, asset)
         end)
     end
-    
+
     -- STEROID ENVIRONMENT FX INJECTION
     createButton(worldFxCategory, "☀️ Fullbright Room / Clear Fog", Color3.fromRGB(255, 210, 0), function() applyEnvironmentTrick("Fullbright") end)
     createButton(worldFxCategory, "🌆 Cyberpunk Midnight", Color3.fromRGB(130, 0, 200), function() applyEnvironmentTrick("NeonCyber") end)
     createButton(worldFxCategory, "🧟 Horror Fog Mode", Color3.fromRGB(40, 60, 50), function() applyEnvironmentTrick("Spooky") end)
     createButton(worldFxCategory, "❌ Reset World Lighting", Color3.fromRGB(80, 90, 100), function() applyEnvironmentTrick("Reset") end)
-    
+
     for _, name in ipairs(sortedKeys) do
         local asset = assets[name] or imageLinks[name]
         createButton(mapCategory, name, Color3.fromRGB(43, 147, 72), function() textureEntireMap(asset) end)
         createButton(skyCategory, name, Color3.fromRGB(0, 119, 182), function() setSkybox(asset) end)
         createButton(shiftlockCategory, "Lock Cursor: " .. name, Color3.fromRGB(224, 122, 95), function() toggleShiftLock(asset) end)
-        
+
         -- Asset Specific Visual FX Manipulation
         createButton(worldFxCategory, "✨ " .. name .. " Ambient Tint", Color3.fromRGB(255, 140, 170), function() applyEnvironmentTrick("AssetTint", asset) end)
         createButton(worldFxCategory, "🌪️ " .. name .. " Floating Particles", Color3.fromRGB(0, 180, 216), function() applyEnvironmentTrick("ParticleStorm", asset) end)
     end
-    
+
     createButton(utilsCategory, "🔄 REVERT EVERYTHING", Color3.fromRGB(230, 57, 70), revertAllToOriginal)
     createButton(utilsCategory, isFrozen and "🔓 Unlock Dragging" or "🔒 Freeze Dragging", Color3.fromRGB(74, 78, 105), function()
         isFrozen = not isFrozen

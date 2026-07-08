@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+auth_info_baileys
+database.sqlite
+*.log
+test-results
+playwright-report
+blob-report
+verification
