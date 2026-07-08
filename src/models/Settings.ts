@@ -2,8 +2,8 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 
 class Settings extends Model {
-  public key!: string;
-  public value!: string;
+  declare public key: string;
+  declare public value: string;
 }
 
 Settings.init(

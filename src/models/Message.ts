@@ -2,13 +2,13 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 
 class Message extends Model {
-  public id!: string;
-  public chatJid!: string;
-  public senderJid!: string;
-  public content!: string;
-  public type!: string;
-  public timestamp!: number;
-  public isEdited!: boolean;
+  declare public id: string;
+  declare public chatJid: string;
+  declare public senderJid: string;
+  declare public content: string;
+  declare public type: string;
+  declare public timestamp: number;
+  declare public isEdited: boolean;
 }
 
 Message.init(

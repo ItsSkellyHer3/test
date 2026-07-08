@@ -49,15 +49,26 @@ export class WhatsAppBot extends EventEmitter {
       }
 
       if (connection === 'close') {
-        const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-        logger.info('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect);
+        const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
+        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+
+        logger.info({
+            err: lastDisconnect?.error,
+            statusCode,
+            shouldReconnect
+        }, 'Connection closed');
+
         if (shouldReconnect) {
-          await delay(5000);
+          const retryDelay = statusCode === 515 ? 2000 : 5000;
+          logger.info(`Reconnecting in ${retryDelay}ms...`);
+          await delay(retryDelay);
           this.start();
         }
       } else if (connection === 'open') {
-        logger.info('opened connection');
+        logger.info('Connection opened successfully');
         this.emit('connected');
+      } else if (connection === 'connecting') {
+        logger.info('Connecting to WhatsApp...');
       }
     });
 

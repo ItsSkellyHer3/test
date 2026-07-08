@@ -2,10 +2,10 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 
 class Group extends Model {
-  public id!: string; // JID
-  public name!: string;
-  public description!: string | null;
-  public isBotAdmin!: boolean;
+  declare public id: string; // JID
+  declare public name: string;
+  declare public description: string | null;
+  declare public isBotAdmin: boolean;
 }
 
 Group.init(
