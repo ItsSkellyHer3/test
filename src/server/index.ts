@@ -1,5 +1,6 @@
 import express from 'express';
 import http from 'http';
+import os from 'os';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -100,6 +101,16 @@ app.get('/api/groups', auth, async (req, res) => {
   res.json(Object.values(groups));
 });
 
+app.get('/api/groups/:jid', auth, async (req, res) => {
+  const { jid } = req.params;
+  try {
+      const metadata = await bot.getSocket().groupMetadata(jid);
+      res.json(metadata);
+  } catch (e) {
+      res.status(500).json({ error: (e as Error).message });
+  }
+});
+
 app.post('/api/groups/:jid/action', auth, async (req, res) => {
   const { jid } = req.params;
   const { action, participants } = req.body;
@@ -162,7 +173,21 @@ const PORT = process.env.PORT || 3000;
 
 export const startServer = () => {
   server.listen(PORT, () => {
+    const nets = os.networkInterfaces();
+    const results: string[] = [];
+
+    for (const name of Object.keys(nets)) {
+        for (const net of nets[name]!) {
+            if (net.family === 'IPv4' && !net.internal) {
+                results.push(`http://${net.address}:${PORT}`);
+            }
+        }
+    }
+
     logger.info(`Server running on port ${PORT}`);
+    logger.info('Dashboard available at:');
+    logger.info(`- http://localhost:${PORT}`);
+    results.forEach(url => logger.info(`- ${url}`));
   });
 };
 

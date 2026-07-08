@@ -45,7 +45,7 @@
                 <i class="extra">android</i>
                 <h5>OSINT Bot</h5>
             </header>
-        <a class="active" onclick="showView('dashboard', this)">
+        <a onclick="showView('dashboard', this)">
                 <i>dashboard</i>
                 <span>Dashboard</span>
             </a>
@@ -139,6 +139,25 @@
                 <div class="grid" id="groups-list">
                     <!-- Groups cards -->
                 </div>
+                <article id="group-detail-view" style="display: none;">
+                    <div class="row">
+                        <button class="circle transparent" onclick="document.getElementById('group-detail-view').style.display='none'; document.getElementById('groups-list').style.display='grid';">
+                            <i>arrow_back</i>
+                        </button>
+                        <h5 id="detail-group-name" class="max">Group Name</h5>
+                    </div>
+                    <div class="space"></div>
+                    <div id="member-list" class="scroll" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Member list -->
+                    </div>
+                </article>
+            </div>
+
+            <div id="analytics-view" class="view" style="display: none;">
+                <article>
+                    <h5>Command Usage</h5>
+                    <div id="analytics-commands"></div>
+                </article>
             </div>
 
             <div id="settings-view" class="view" style="display: none;">
