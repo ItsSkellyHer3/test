@@ -57,11 +57,11 @@
                 <i>group</i>
                 <span>Groups</span>
             </a>
-            <a>
+        <a onclick="showView('analytics', this)">
                 <i>analytics</i>
                 <span>Analytics</span>
             </a>
-            <a>
+        <a onclick="showView('settings', this)">
                 <i>settings</i>
                 <span>Settings</span>
             </a>
@@ -139,6 +139,32 @@
                 <div class="grid" id="groups-list">
                     <!-- Groups cards -->
                 </div>
+            </div>
+
+            <div id="settings-view" class="view" style="display: none;">
+                <article>
+                    <h5>Bot Settings</h5>
+                    <div class="field label border">
+                        <input type="text" id="bot-display-name">
+                        <label>Display Name</label>
+                    </div>
+                    <div class="field label border">
+                        <input type="text" id="bot-bio">
+                        <label>Bio/About</label>
+                    </div>
+                    <div class="field label border">
+                        <select id="bot-presence">
+                            <option value="available">Online</option>
+                            <option value="unavailable">Offline</option>
+                            <option value="composing">Typing</option>
+                            <option value="recording">Recording</option>
+                        </select>
+                        <label>Presence</label>
+                    </div>
+                    <nav class="right-align">
+                        <button onclick="saveBotSettings()">Save Settings</button>
+                    </nav>
+                </article>
             </div>
 
             <div id="chat-view" class="view" style="display: none;">

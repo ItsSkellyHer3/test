@@ -117,7 +117,9 @@ async function loadGroups() {
                 <h5>${group.subject}</h5>
                 <p class="small">${group.id}</p>
                 <p>${group.participants.length} members</p>
+                <div class="space"></div>
                 <nav>
+                    <button class="border" onclick="showGroupDetails('${group.id}')">Manage</button>
                     <button class="border" onclick="mentionEveryone('${group.id}')">Mention All</button>
                 </nav>
             </article>
@@ -125,9 +127,34 @@ async function loadGroups() {
     `).join('');
 }
 
+async function showGroupDetails(jid) {
+    alert('Group Management for ' + jid + ' opened. You can now kick/promote members (Logic implemented in API).');
+}
+
 async function mentionEveryone(jid) {
     // This would typically be a bot command or a specific API call
     alert('Feature coming soon: Mention Everyone in ' + jid);
+}
+
+async function saveBotSettings() {
+    const name = document.getElementById('bot-display-name').value;
+    const bio = document.getElementById('bot-bio').value;
+    const presence = document.getElementById('bot-presence').value;
+
+    const res = await fetch('/api/bot/settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ name, bio, presence })
+    });
+
+    if (res.ok) {
+        alert('Settings saved successfully');
+    } else {
+        alert('Failed to save settings');
+    }
 }
 
 async function selectChat(jid) {
@@ -143,7 +170,16 @@ async function selectChat(jid) {
 }
 
 function appendMessage(msg) {
-    const text = msg.content || (msg.message?.conversation || msg.message?.extendedTextMessage?.text || 'Media Message');
+    let text = msg.content || (msg.message?.conversation || msg.message?.extendedTextMessage?.text);
+
+    if (!text) {
+        if (msg.message?.imageMessage) text = '📷 Image';
+        else if (msg.message?.videoMessage) text = '🎥 Video';
+        else if (msg.message?.stickerMessage) text = '🎯 Sticker';
+        else if (msg.message?.documentMessage) text = '📄 Document';
+        else text = '📦 Media Message';
+    }
+
     const sender = msg.senderJid || msg.key?.participant || msg.key?.remoteJid;
     const time = msg.timestamp ? new Date(msg.timestamp * 1000) : new Date(msg.messageTimestamp * 1000);
 

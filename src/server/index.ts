@@ -112,6 +112,20 @@ app.post('/api/groups/:jid/action', auth, async (req, res) => {
   }
 });
 
+app.post('/api/bot/settings', auth, async (req, res) => {
+  const { name, bio, presence } = req.body;
+
+  try {
+    if (name) await bot.getSocket().updateProfileName(name);
+    if (bio) await bot.getSocket().updateProfileStatus(bio);
+    if (presence) await bot.getSocket().sendPresenceUpdate(presence);
+
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
 app.get('/api/chats', auth, async (req, res) => {
   const chats = await Message.findAll({
     attributes: [
