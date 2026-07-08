@@ -4,4 +4,7 @@ dist
 auth_info_baileys
 database.sqlite
 *.log
->>>>>>> REPLACE
+test-results
+playwright-report
+blob-report
+verification

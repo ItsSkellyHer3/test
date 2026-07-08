@@ -81,7 +81,15 @@ export class CommandHandler {
 
     if (command) {
       // Check permissions
-      const [user] = await User.findOrCreate({ where: { id: msg.key.participant || msg.key.remoteJid! } });
+      const userId = msg.key.participant || msg.key.remoteJid!;
+      const [user] = await User.findOrCreate({
+        where: { id: userId },
+        defaults: {
+            id: userId,
+            name: userId.split('@')[0],
+            role: userId.includes(process.env.OWNER_NUMBER || '---') ? 'OWNER' : 'GUEST'
+        } as any
+      });
       const userRole = user.role || 'GUEST';
       const minRole = command.minRole || 'GUEST';
 
