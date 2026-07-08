@@ -2,12 +2,12 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database';
 
 class CommandLog extends Model {
-  public id!: number;
-  public command!: string;
-  public userJid!: string;
-  public chatJid!: string;
-  public success!: boolean;
-  public timestamp!: number;
+  declare public id: number;
+  declare public command: string;
+  declare public userJid: string;
+  declare public chatJid: string;
+  declare public success: boolean;
+  declare public timestamp: number;
 }
 
 CommandLog.init(
