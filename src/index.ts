@@ -24,6 +24,12 @@ async function main() {
         const sender = msg.key.participant || jid;
         const text = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
 
+        // Passive Owner Detection
+        const ownerNumber = process.env.OWNER_NUMBER || '';
+        if (jid.endsWith('@g.us') && sender === ownerNumber && !text.startsWith(process.env.PREFIX || '.')) {
+            await bot.sendMessage(jid, { text: `👑 The King has spoken! Welcome back, Boss.` }, { quoted: msg });
+        }
+
         // Save message to DB
         try {
             await Message.upsert({

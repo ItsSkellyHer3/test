@@ -33,7 +33,7 @@ const ROLE_PRIORITY = {
 };
 
 export class CommandHandler {
-  private commands: Map<string, Command> = new Map();
+  public commands: Map<string, Command> = new Map();
   private aliases: Map<string, string> = new Map();
 
   constructor() {
